@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>වැටුප් පත්‍රිකාව (x2 Side-by-Side) - Chandi Vine Stores</title>
+    
+    <!-- Add Noto Sans Sinhala font -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         body {
@@ -14,7 +17,7 @@
             background-color: #e0e0e0;
             padding: 20px;
             min-height: 100vh;
-            box-sizing: border-box; /* Include padding in body width calculation */
+            box-sizing: border-box;
         }
 
         /* --- A4 Page Simulation --- */
@@ -26,27 +29,18 @@
             padding: 10mm; /* A4 margins */
             box-sizing: border-box;
             display: flex;
-            flex-direction: row; /* <<< CHANGED: Arrange items horizontally */
-            justify-content: space-around; /* <<< CHANGED: Space items horizontally */
+            flex-direction: row; /* Arrange items horizontally */
+            justify-content: space-around; /* Space items horizontally */
             align-items: flex-start; /* Align items to the top */
             margin-bottom: 20px;
             overflow: hidden; /* Hide potential overflow */
         }
 
         .paysheet-wrapper {
-             /* Approx slightly less than half A4 width minus padding/margins */
             width: 95mm;
-            /* height: 277mm; /* Fit within A4 height minus padding */
-            /* border: 1px solid #eee; */
-            overflow: hidden;
             box-sizing: border-box;
-            padding: 0; /* Remove padding here, add to .paysheet */
-            /* margin-bottom: 0; */ /* Removed vertical margin */
-            /* margin-right: 5mm; /* Spacing handled by justify-content */
+            padding: 0;
         }
-         /* Remove margin for the last wrapper if needed (not necessary with space-around/between) */
-        /* .paysheet-wrapper:last-child { margin-right: 0; } */
-
 
         /* --- Individual Paysheet Styles (Inside Wrapper) --- */
         .paysheet {
@@ -60,22 +54,106 @@
             flex-direction: column; /* Stack content vertically */
         }
 
-        /* Styles for header, h1, h2, row, label, input, result, hr are the same as before */
         .paysheet header { text-align: center; margin-bottom: 15px; }
         .paysheet h1 { font-size: 14px; margin: 0; color: #333; }
         .paysheet h2 { font-size: 12px; color: #555; margin-top: 10px; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 3px; }
-        .paysheet .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 10px; min-height: 20px; }
+        .paysheet .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 10px; min-height: 24px; } /* Increased min-height */
         .paysheet label { flex-basis: 55%; text-align: left; padding-right: 5px; color: #444; white-space: nowrap; }
-        .paysheet input[type="text"],
-        .paysheet input[type="month"],
-        .paysheet input[type="number"] { flex-basis: 45%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; font-size: 10px; box-sizing: border-box; text-align: right; }
-        .paysheet .result span,
-        .paysheet .calculated-deduction { flex-basis: 45%; text-align: right; font-weight: bold; padding: 4px 5px; font-size: 10px; min-height: 20px; display: inline-block; box-sizing: border-box; }
-        .paysheet .gross-pay,
-        .paysheet .net-pay { font-weight: bold; font-size: 11px; margin-top: 8px; }
-        .paysheet hr { border: none; border-top: 1px dashed #ccc; margin: 10px 0; }
-        #epf_auto_calc { font-size: 9px; flex-basis: 100%; text-align: right; color: #666; margin-top: -5px; margin-bottom: 5px;} /* Adjust hint position */
+        
+       /* Input fields සඳහා සැකසුම් */
+.paysheet input[type="text"],
+.paysheet input[type="month"],
+.paysheet input[type="number"] { 
+    flex-basis: 45%; 
+    padding: 6px 8px; /* වැඩි කළ padding */
+    border: 1px solid #ccc; 
+    border-radius: 3px; 
+    font-size: 14px; /* වැඩි කළ font size */
+    font-family: 'Noto Sans Sinhala', sans-serif;
+    box-sizing: border-box; 
+    text-align: right;
+    height: 32px; /* වැඩි කළ height */
+    line-height: 1.5; /* වැඩි කළ line height */
+}
 
+/* ටිකක් පොඩි screen සඳහා වඩා සුදුසු size එකක් */
+@media screen and (max-width: 900px) {
+    .paysheet input[type="text"],
+    .paysheet input[type="month"],
+    .paysheet input[type="number"] { 
+        font-size: 13px;
+        height: 30px;
+    }
+}
+
+/* Print කරන විට වැඩි font size එකක් යොදන්න */
+@media print {
+    .paysheet input[type="text"],
+    .paysheet input[type="month"],
+    .paysheet input[type="number"] {
+        font-size: 14px !important;
+        line-height: 1.8 !important;
+        height: auto !important; /* Height automatically adjust වෙන්න දෙනවා */
+        min-height: 32px !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+        overflow: visible !important;
+    }
+
+    /* All text elements - ensure they have enough height */
+    * {
+        overflow: visible !important;
+    }
+}
+        
+        .paysheet .result span,
+        .paysheet .calculated-deduction { 
+            flex-basis: 45%; 
+            text-align: right; 
+            font-weight: bold; 
+            padding: 6px 5px; /* Increased padding */
+            font-size: 12px; /* Increased font size */
+            min-height: 28px; /* Increased min-height to match inputs */
+            display: inline-block; 
+            box-sizing: border-box; 
+        }
+        
+        .paysheet .gross-pay,
+        .paysheet .net-pay { 
+            font-weight: bold; 
+            font-size: 13px; /* Increased font size */
+            margin-top: 8px; 
+        }
+        
+        .paysheet hr { border: none; border-top: 1px dashed #ccc; margin: 10px 0; }
+        
+        .epf_auto_calc { 
+            font-size: 10px; /* Slightly increased font size */
+            flex-basis: 100%; 
+            text-align: right; 
+            color: #666; 
+            margin-top: -5px; 
+            margin-bottom: 5px;
+        } /* Adjust hint position */
+
+        /* --- Net Pay Section - Make it more prominent --- */
+        .paysheet .net-pay {
+            padding: 10px 0;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .paysheet .net-pay h2 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .paysheet .net-pay span {
+            font-size: 16px;
+            color: #088;
+        }
 
         /* --- Button Style --- */
          button#savePdfButton {
@@ -89,6 +167,7 @@
             font-size: 16px;
             font-family: 'Noto Sans Sinhala', sans-serif;
             transition: background-color 0.3s ease;
+            margin-top: 15px;
         }
 
         button#savePdfButton:hover {
@@ -121,7 +200,6 @@
              .paysheet-wrapper {
                  width: 48%; /* Use percentage for better print scaling */
                  height: auto; /* Let content define height */
-                 /* margin: 0 1%; */ /* Adjust print margins/spacing */
                  padding: 0;
                  box-sizing: border-box;
                  page-break-inside: avoid !important;
@@ -137,12 +215,17 @@
                  page-break-inside: avoid !important;
              }
 
-            button#savePdfButton, #epf_auto_calc {
+            button#savePdfButton, .epf_auto_calc {
                  display: none !important;
             }
 
-            /* Optional: Adjust font size for print if needed */
-            /* .paysheet { font-size: 9pt; } */
+            /* Ensure inputs print with their content visible */
+            .paysheet input {
+                border: none !important;
+                background: transparent !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
 
             * {
                 color: #000 !important; /* Ensure text is black */
@@ -177,7 +260,7 @@
                  <section class="deductions">
                       <h2>අඩු කිරීම් (Deductions)</h2>
                       <div class="row"><label for="deduction_epf_input">EPF අඩුකිරීම:</label><input type="number" id="deduction_epf_input" value="0" step="any" oninput="calculatePaysheet()" placeholder="අතින් ඇතුලත් කරන්න"></div>
-                      <div class="row"><span id="epf_auto_calc">(යෝජිත 8% (Basic): <span id="epf_calculated_value">0.00</span>)</span></div>
+                      <div class="row"><span class="epf_auto_calc">(යෝජිත 8% (Basic): <span id="epf_calculated_value">0.00</span>)</span></div>
                       <div class="row"><label for="deduction_advance">වැටුප් අත්තිකාරම්:</label><input type="number" id="deduction_advance" value="0" step="any" oninput="calculatePaysheet()"></div>
                       <div class="row"><label for="deduction_other">වෙනත් අඩුකිරීම්:</label><input type="number" id="deduction_other" value="0" step="any" oninput="calculatePaysheet()"></div>
                       <div class="row result"><label>මුළු අඩු කිරීම් (Total Deductions):</label><span id="total_deductions">0.00</span></div>
@@ -185,7 +268,7 @@
                   <hr>
                  <section class="net-pay result">
                      <h2>ශුද්ධ වැටුප (Net Pay):</h2>
-                     <span id="net_pay">0.00</span>
+                     <span id="net_pay" style="font-size: 16px;">0.00</span>
                  </section>
             </div>
         </div>
@@ -195,7 +278,8 @@
                 <p style="text-align: center; color: #aaa; margin-top: 20px;">වැටුප් පත්‍රිකාවේ දෙවන පිටපත මෙහි දිස්වනු ඇත.</p>
             </div>
         </div>
-    </div><button id="savePdfButton" onclick="generatePDF()">PDF ලෙස සුරකින්න (පැති දෙක)</button>
+    </div>
+    <button id="savePdfButton" onclick="generatePDF()">PDF ලෙස සුරකින්න (පැති දෙක)</button>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -203,88 +287,194 @@
     <script>
         const { jsPDF } = window.jspdf;
 
-        function getValue(id) { /* ... Same as before ... */
-            const element = document.getElementById(id);
+        // Improved function to get values with better prefix handling
+        function getValue(id, sheetPrefix = '') {
+            // Add sheet prefix if provided (for paysheet2)
+            const elementId = sheetPrefix ? `${sheetPrefix}_${id}` : id;
+            const element = document.getElementById(elementId);
+            
             if (element) {
-                 const value = element.value;
+                const value = element.value || element.textContent;
                 return value === '' ? 0 : parseFloat(value) || 0;
             }
-             console.warn(`Element with id "${id}" not found in paysheet1.`);
+            console.warn(`Element with id "${elementId}" not found.`);
             return 0;
         }
-        function setText(id, value) { /* ... Same as before ... */
-             const element = document.getElementById(id);
-             if (element) {
-                 element.textContent = value;
-             } else {
-                  console.warn(`Element with id "${id}" not found for setting text.`);
-             }
-         }
-        function updateEpfAndCalculate() { /* ... Same as before ... */
+        
+        // Improved function to set text with better prefix handling
+        function setText(id, value, sheetPrefix = '') {
+            // Add sheet prefix if provided (for paysheet2)
+            const elementId = sheetPrefix ? `${sheetPrefix}_${id}` : id;
+            const element = document.getElementById(elementId);
+            
+            if (element) {
+                element.textContent = value;
+            } else {
+                console.warn(`Element with id "${elementId}" not found for setting text.`);
+            }
+        }
+         
+        function updateEpfAndCalculate() {
             calculateEpfSuggestion();
             calculatePaysheet();
         }
-        function calculateEpfSuggestion() { /* ... Same as before ... */
-            const basicSalary = getValue('basic_salary');
+        
+        function calculateEpfSuggestion(sheetPrefix = '') {
+            const basicSalary = getValue('basic_salary', sheetPrefix);
             const epfPercentage = 8;
             const calculatedEpf = (basicSalary * epfPercentage) / 100;
-             setText('epf_calculated_value', calculatedEpf.toFixed(2));
+            setText('epf_calculated_value', calculatedEpf.toFixed(2), sheetPrefix);
         }
-        function calculatePaysheet() { /* ... Same as before ... */
-            const basicSalary = getValue('basic_salary');
-            const allowanceTransport = getValue('allowance_transport');
-            const allowanceAttendance = getValue('allowance_attendance');
-            const allowanceService = getValue('allowance_service');
-            const otHours = getValue('ot_hours');
-            const otRate = getValue('ot_rate');
-            const epfDeduction = getValue('deduction_epf_input');
-            const deductionAdvance = getValue('deduction_advance');
-            const deductionOther = getValue('deduction_other');
-            calculateEpfSuggestion();
+        
+        function calculatePaysheet(sheetPrefix = '') {
+            const basicSalary = getValue('basic_salary', sheetPrefix);
+            const allowanceTransport = getValue('allowance_transport', sheetPrefix);
+            const allowanceAttendance = getValue('allowance_attendance', sheetPrefix);
+            const allowanceService = getValue('allowance_service', sheetPrefix);
+            const otHours = getValue('ot_hours', sheetPrefix);
+            const otRate = getValue('ot_rate', sheetPrefix);
+            const epfDeduction = getValue('deduction_epf_input', sheetPrefix);
+            const deductionAdvance = getValue('deduction_advance', sheetPrefix);
+            const deductionOther = getValue('deduction_other', sheetPrefix);
+            
+            calculateEpfSuggestion(sheetPrefix);
+            
             const otPay = otHours * otRate;
-             setText('ot_pay', otPay.toFixed(2));
+            setText('ot_pay', otPay.toFixed(2), sheetPrefix);
+            
             const grossPay = basicSalary + allowanceTransport + allowanceAttendance + allowanceService + otPay;
-            setText('gross_pay', grossPay.toFixed(2));
+            setText('gross_pay', grossPay.toFixed(2), sheetPrefix);
+            
             const totalDeductions = epfDeduction + deductionAdvance + deductionOther;
-            setText('total_deductions', totalDeductions.toFixed(2));
+            setText('total_deductions', totalDeductions.toFixed(2), sheetPrefix);
+            
             const netPay = grossPay - totalDeductions;
-             setText('net_pay', netPay.toFixed(2));
+            setText('net_pay', netPay.toFixed(2), sheetPrefix);
         }
 
-        async function generatePDF() { /* ... Same as before ... */
+        // Function to copy values from original paysheet to the copy
+        function copyPaysheetValues(sourcePrefix = '', targetPrefix = 'copy_') {
+            // List of all input fields to copy
+            const inputFields = [
+                'month', 'name', 'designation', 'basic_salary',
+                'allowance_transport', 'allowance_attendance', 'allowance_service',
+                'ot_hours', 'ot_rate', 'deduction_epf_input',
+                'deduction_advance', 'deduction_other'
+            ];
+            
+            // Copy each input value
+            inputFields.forEach(field => {
+                const sourceId = sourcePrefix ? `${sourcePrefix}${field}` : field;
+                const targetId = `${targetPrefix}${field}`;
+                
+                const sourceElement = document.getElementById(sourceId);
+                const targetElement = document.getElementById(targetId);
+                
+                if (sourceElement && targetElement) {
+                    targetElement.value = sourceElement.value;
+                }
+            });
+            
+            // Calculate the copied paysheet
+            calculatePaysheet(targetPrefix);
+        }
+
+        // Completely redesigned function to create a duplicate paysheet
+        function createDuplicatePaysheet() {
             const paysheet1Element = document.getElementById('paysheet1');
             const paysheet2Element = document.getElementById('paysheet2');
+            
+            if (!paysheet1Element || !paysheet2Element) {
+                console.error("Missing required elements");
+                return false;
+            }
+            
+            // Clone the original paysheet
+            const duplicatePaysheet = paysheet1Element.cloneNode(true);
+            
+            // Update all IDs in the duplicate to have 'copy_' prefix
+            const elementsWithId = duplicatePaysheet.querySelectorAll('[id]');
+            elementsWithId.forEach(el => {
+                el.id = `copy_${el.id}`;
+                
+                // Add event listeners to the copied inputs
+                if (el.tagName === 'INPUT') {
+                    if (el.id === 'copy_basic_salary') {
+                        el.addEventListener('input', () => {
+                            calculateEpfSuggestion('copy_');
+                            calculatePaysheet('copy_');
+                        });
+                    } else {
+                        el.addEventListener('input', () => calculatePaysheet('copy_'));
+                    }
+                }
+            });
+            
+            // Update 'for' attributes in labels
+            const labelsWithFor = duplicatePaysheet.querySelectorAll('label[for]');
+            labelsWithFor.forEach(label => {
+                const forValue = label.getAttribute('for');
+                label.setAttribute('for', `copy_${forValue}`);
+            });
+            
+            // Clear and append the duplicate paysheet
+            paysheet2Element.innerHTML = '';
+            paysheet2Element.appendChild(duplicatePaysheet);
+            
+            // Copy values from original to duplicate
+            copyPaysheetValues('', 'copy_');
+            
+            return true;
+        }
+
+        async function generatePDF() {
             const printableArea = document.getElementById('printableArea');
             const button = document.getElementById('savePdfButton');
 
-            // 1. Copy content
-            paysheet2Element.innerHTML = paysheet1Element.innerHTML;
+            // First, create the duplicate paysheet
+            if (!createDuplicatePaysheet()) {
+                alert("දෙවන පිටපත නිර්මාණය කිරීමේ දෝෂයක්!");
+                return;
+            }
 
-            // 2. Hide button
+            // Hide the button during capture
             if (button) button.style.display = 'none';
-            await new Promise(resolve => setTimeout(resolve, 100)); // Short delay
+            await new Promise(resolve => setTimeout(resolve, 500)); // Give time for DOM updates
 
             try {
-                 console.log("Capturing printable area (Side-by-Side)...");
-                // 3. Capture the entire A4 container
-                const canvas = await html2canvas(printableArea, {
-                    scale: 2.5, // Keep higher scale
-                    useCORS: true,
-                    logging: true,
-                    scrollX: 0,
-                    scrollY: -window.scrollY, // Try capturing from the very top
-                    windowWidth: document.documentElement.offsetWidth, // Try document width
-                    windowHeight: document.documentElement.offsetHeight, // Try document height
-                    backgroundColor: '#ffffff'
-                });
-                 console.log("Canvas created, width:", canvas.width, "height:", canvas.height);
+                console.log("Capturing printable area (Side-by-Side)...");
+                // html2canvas function එක තුළ
+const canvas = await html2canvas(printableArea, {
+    scale: 2.5, // keep scale high
+    useCORS: true,
+    logging: true,
+    scrollX: 0,
+    scrollY: -window.scrollY,
+    windowWidth: document.documentElement.offsetWidth,
+    windowHeight: document.documentElement.offsetHeight,
+    backgroundColor: '#ffffff',
+    letterRendering: true, // මෙය වැදගත්
+    allowTaint: true,
+    height: printableArea.scrollHeight + 50, // වැඩි height එකක් දෙනවා
+    onclone: function(clonedDoc) {
+        // Ensure all text is fully visible in the clone
+        const inputs = clonedDoc.querySelectorAll('.paysheet input');
+        inputs.forEach(input => {
+            input.style.overflow = 'visible';
+            input.style.height = 'auto';
+            input.style.minHeight = '32px';
+        });
+    }
+});
+                
+                console.log("Canvas created, width:", canvas.width, "height:", canvas.height);
                 const imgData = canvas.toDataURL('image/png');
 
-                // 4. Show button again
+                // Show button again
                 if (button) button.style.display = 'block';
 
-                // 5. Create PDF - Use standard A4 size (Portrait)
-                 console.log("Creating PDF document (A4 Portrait)...");
+                // Create PDF - Use standard A4 size (Portrait)
+                console.log("Creating PDF document (A4 Portrait)...");
                 const pdf = new jsPDF({
                     orientation: 'portrait',
                     unit: 'mm',
@@ -292,46 +482,52 @@
                 });
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = pdf.internal.pageSize.getHeight();
-                 console.log("PDF Page Size (mm):", pdfWidth, "x", pdfHeight);
+                console.log("PDF Page Size (mm):", pdfWidth, "x", pdfHeight);
 
-                // Calculate aspect ratio and scaling (Same logic as before)
-                 const imgProps = pdf.getImageProperties(imgData);
-                 const imgWidth = imgProps.width;
-                 const imgHeight = imgProps.height;
-                 console.log("Captured Image Size (pixels):", imgWidth, "x", imgHeight);
-                const ratio = Math.min((pdfWidth - 10) / imgWidth, (pdfHeight - 10) / imgHeight); // Margins
-                 const effectiveImgWidth = imgWidth * ratio;
-                 const effectiveImgHeight = imgHeight * ratio;
-                 console.log("Scaled Image Size for PDF (mm):", effectiveImgWidth, "x", effectiveImgHeight);
+                // Calculate aspect ratio and scaling
+                const imgProps = pdf.getImageProperties(imgData);
+                const imgWidth = imgProps.width;
+                const imgHeight = imgProps.height;
+                console.log("Captured Image Size (pixels):", imgWidth, "x", imgHeight);
+                const ratio = Math.min((pdfWidth - 10) / imgWidth, (pdfHeight - 10) / imgHeight);
+                const effectiveImgWidth = imgWidth * ratio;
+                const effectiveImgHeight = imgHeight * ratio;
+                console.log("Scaled Image Size for PDF (mm):", effectiveImgWidth, "x", effectiveImgHeight);
                 const xOffset = (pdfWidth - effectiveImgWidth) / 2;
                 const yOffset = (pdfHeight - effectiveImgHeight) / 2;
-                 console.log("PDF Image Offset (mm):", xOffset, "x", yOffset);
+                console.log("PDF Image Offset (mm):", xOffset, "x", yOffset);
 
-                // 6. Add the captured image
+                // Add the captured image
                 pdf.addImage(imgData, 'PNG', xOffset, yOffset, effectiveImgWidth, effectiveImgHeight);
-                 console.log("Image added to PDF.");
+                console.log("Image added to PDF.");
 
-                // 7. Save PDF
+                // Save PDF
                 const monthInput = document.getElementById('month');
                 const nameInput = document.getElementById('name');
                 const monthValue = monthInput ? monthInput.value : 'paysheet_month';
                 const nameValue = nameInput ? nameInput.value.trim() : 'employee';
                 const safeName = nameValue.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_.-]/g, '');
                 const safeMonth = monthValue.replace(/[^a-zA-Z0-9_-]/g, '');
-                const filename = `${safeName}_${safeMonth}_paysheet_sideX2.pdf`; // Indicate side-by-side
+                const filename = `${safeName}_${safeMonth}_paysheet_sideX2.pdf`;
                 console.log("Saving PDF as:", filename);
                 pdf.save(filename);
+
+                // Clean up - remove the copied content and restore placeholder
+                const paysheet2Element = document.getElementById('paysheet2');
+                paysheet2Element.innerHTML = '<p style="text-align: center; color: #aaa; margin-top: 20px;">වැටුප් පත්‍රිකාවේ දෙවන පිටපත මෙහි දිස්වනු ඇත.</p>';
 
             } catch (error) {
                 console.error("PDF සෑදීමේදී දෝෂයක්:", error);
                 if (button) button.style.display = 'block';
                 alert("PDF ගොනුව සෑදීමේදී දෝෂයක් ඇතිවිය. වැඩි විස්තර සඳහා Console (F12) බලන්න.");
+                
+                // Clean up even on error
+                const paysheet2Element = document.getElementById('paysheet2');
+                paysheet2Element.innerHTML = '<p style="text-align: center; color: #aaa; margin-top: 20px;">වැටුප් පත්‍රිකාවේ දෙවන පිටපත මෙහි දිස්වනු ඇත.</p>';
             }
         }
 
-        // Attach listeners & Initial calculation (Same as before)
-        const basicSalaryInput = document.getElementById('basic_salary');
-        if (basicSalaryInput) { basicSalaryInput.addEventListener('input', updateEpfAndCalculate); }
+        // Initialize calculations
         window.onload = calculatePaysheet;
     </script>
 
