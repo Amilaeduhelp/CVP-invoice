@@ -1,534 +1,736 @@
 <!DOCTYPE html>
-<html lang="si">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>වැටුප් පත්‍රිකාව (x2 Side-by-Side) - Chandi Vine Stores</title>
-    
-    <!-- Add Noto Sans Sinhala font -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700&display=swap" rel="stylesheet">
-
+    <title>Pay Report - Chandi Vine Stores - Panadura</title>
     <style>
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            body {
+                margin: 0;
+            }
+            .page {
+                display: flex;
+                width: 100%;
+                height: 100%;
+                page-break-after: always;
+            }
+            .report-container {
+                width: 50%;
+                box-sizing: border-box;
+                padding: 10mm;
+                border-right: 1px dashed #999;
+            }
+            .report-container:last-child {
+                border-right: none;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+        
         body {
-            font-family: 'Noto Sans Sinhala', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #e0e0e0;
-            padding: 20px;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-
-        /* --- A4 Page Simulation --- */
-        .a4-page-container {
-            border: 1px dashed #999;
-            background-color: #ffffff;
-            width: 210mm; /* A4 width */
-            min-height: 297mm; /* A4 height */
-            padding: 10mm; /* A4 margins */
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: row; /* Arrange items horizontally */
-            justify-content: space-around; /* Space items horizontally */
-            align-items: flex-start; /* Align items to the top */
-            margin-bottom: 20px;
-            overflow: hidden; /* Hide potential overflow */
-        }
-
-        .paysheet-wrapper {
-            width: 95mm;
-            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            margin: 0;
             padding: 0;
         }
-
-        /* --- Individual Paysheet Styles (Inside Wrapper) --- */
-        .paysheet {
-            width: 100%; /* Fit inside the wrapper */
-            height: 100%; /* Try to fill wrapper height */
-            border: 1px solid #ccc;
-            padding: 8mm; /* Padding inside paysheet */
+        
+        .page {
+            display: flex;
+            width: 210mm;
+            margin: 0 auto;
+        }
+        
+        .report-container {
+            width: 105mm;
             box-sizing: border-box;
-            background-color: #fff;
-            display: flex; /* Use flex for internal layout */
-            flex-direction: column; /* Stack content vertically */
-        }
-
-        .paysheet header { text-align: center; margin-bottom: 15px; }
-        .paysheet h1 { font-size: 14px; margin: 0; color: #333; }
-        .paysheet h2 { font-size: 12px; color: #555; margin-top: 10px; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 3px; }
-        .paysheet .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 10px; min-height: 24px; } /* Increased min-height */
-        .paysheet label { flex-basis: 55%; text-align: left; padding-right: 5px; color: #444; white-space: nowrap; }
-        
-       /* Input fields සඳහා සැකසුම් */
-.paysheet input[type="text"],
-.paysheet input[type="month"],
-.paysheet input[type="number"] { 
-    flex-basis: 45%; 
-    padding: 6px 8px; /* වැඩි කළ padding */
-    border: 1px solid #ccc; 
-    border-radius: 3px; 
-    font-size: 14px; /* වැඩි කළ font size */
-    font-family: 'Noto Sans Sinhala', sans-serif;
-    box-sizing: border-box; 
-    text-align: right;
-    height: 32px; /* වැඩි කළ height */
-    line-height: 1.5; /* වැඩි කළ line height */
-}
-
-/* ටිකක් පොඩි screen සඳහා වඩා සුදුසු size එකක් */
-@media screen and (max-width: 900px) {
-    .paysheet input[type="text"],
-    .paysheet input[type="month"],
-    .paysheet input[type="number"] { 
-        font-size: 13px;
-        height: 30px;
-    }
-}
-
-/* Print කරන විට වැඩි font size එකක් යොදන්න */
-@media print {
-    .paysheet input[type="text"],
-    .paysheet input[type="month"],
-    .paysheet input[type="number"] {
-        font-size: 14px !important;
-        line-height: 1.8 !important;
-        height: auto !important; /* Height automatically adjust වෙන්න දෙනවා */
-        min-height: 32px !important;
-        padding-top: 8px !important;
-        padding-bottom: 8px !important;
-        overflow: visible !important;
-    }
-
-    /* All text elements - ensure they have enough height */
-    * {
-        overflow: visible !important;
-    }
-}
-        
-        .paysheet .result span,
-        .paysheet .calculated-deduction { 
-            flex-basis: 45%; 
-            text-align: right; 
-            font-weight: bold; 
-            padding: 6px 5px; /* Increased padding */
-            font-size: 12px; /* Increased font size */
-            min-height: 28px; /* Increased min-height to match inputs */
-            display: inline-block; 
-            box-sizing: border-box; 
+            padding: 10mm;
         }
         
-        .paysheet .gross-pay,
-        .paysheet .net-pay { 
-            font-weight: bold; 
-            font-size: 13px; /* Increased font size */
-            margin-top: 8px; 
+        .container {
+            width: 100%;
+            border: 1px solid #ddd;
+            padding: 10mm;
+            box-sizing: border-box;
         }
         
-        .paysheet hr { border: none; border-top: 1px dashed #ccc; margin: 10px 0; }
-        
-        .epf_auto_calc { 
-            font-size: 10px; /* Slightly increased font size */
-            flex-basis: 100%; 
-            text-align: right; 
-            color: #666; 
-            margin-top: -5px; 
-            margin-bottom: 5px;
-        } /* Adjust hint position */
-
-        /* --- Net Pay Section - Make it more prominent --- */
-        .paysheet .net-pay {
-            padding: 10px 0;
-            background-color: #f9f9f9;
-            border-radius: 5px;
+        .header {
             text-align: center;
-            margin-top: 10px;
+            margin-bottom: 15px;
         }
-
-        .paysheet .net-pay h2 {
-            text-align: center;
-            margin-bottom: 5px;
-        }
-
-        .paysheet .net-pay span {
+        
+        .header h2 {
+            margin: 0 0 5px 0;
             font-size: 16px;
-            color: #088;
         }
-
-        /* --- Button Style --- */
-         button#savePdfButton {
-            display: block;
-            padding: 12px 25px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-family: 'Noto Sans Sinhala', sans-serif;
-            transition: background-color 0.3s ease;
+        
+        .header h3 {
+            margin: 0;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .form-group label {
+            width: 150px;
+            text-align: left;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100px;
+            padding: 3px;
+            text-align: right;
+            border: 1px solid #ccc;
+        }
+        
+        .form-group select {
+            text-align: left;
+        }
+        
+        /* Make the name select wider */
+        .form-group select.name {
+            width: 160px;
+        }
+        
+        .section-title {
+            font-weight: bold;
             margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 13px;
         }
-
-        button#savePdfButton:hover {
-            background-color: #0056b3;
+        
+        .result-field {
+            font-weight: bold;
+            background-color: #f9f9f9;
         }
-
-        /* --- Print Specific Styles --- */
-        @media print {
-            body {
-                padding: 0;
-                margin: 0;
-                background: none;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-
-            .a4-page-container {
-                border: none;
-                width: 100%; /* Use printer page width */
-                height: 100%; /* Use printer page height */
-                padding: 5mm; /* Minimal padding for print */
-                margin: 0;
-                box-shadow: none;
-                display: flex !important; /* Ensure flex is applied */
-                flex-direction: row !important;
-                justify-content: space-between !important; /* Space out in print */
-                align-items: flex-start !important;
-            }
-
-             .paysheet-wrapper {
-                 width: 48%; /* Use percentage for better print scaling */
-                 height: auto; /* Let content define height */
-                 padding: 0;
-                 box-sizing: border-box;
-                 page-break-inside: avoid !important;
-             }
-
-             .paysheet {
-                 box-shadow: none;
-                 border: 1px solid #666; /* Keep a light border */
-                 margin: 0; /* Remove auto margin */
-                 width: 100%; /* Fill wrapper */
-                 height: auto;
-                 padding: 5mm; /* Reduce padding for print */
-                 page-break-inside: avoid !important;
-             }
-
-            button#savePdfButton, .epf_auto_calc {
-                 display: none !important;
-            }
-
-            /* Ensure inputs print with their content visible */
-            .paysheet input {
-                border: none !important;
-                background: transparent !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-
-            * {
-                color: #000 !important; /* Ensure text is black */
-            }
+        
+        .small-note {
+            font-size: 10px;
+            color: #666;
+            margin-left: 5px;
+        }
+        
+        .signature-section {
+            margin-top: 20px;
+            font-size: 12px;
+        }
+        
+        .signature-line {
+            border-top: 1px solid #000;
+            width: 120px;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+        
+        .footer {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .no-print {
+            text-align: center;
+            margin: 20px auto;
+            max-width: 210mm;
+        }
+        
+        .pdf-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        
+        .pdf-button:hover {
+            background-color: #45a049;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+        }
+        
+        /* Date picker styles */
+        .date-picker-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .date-picker-calendar {
+            display: none;
+            position: absolute;
+            z-index: 1000;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            padding: 10px;
+            width: 250px;
+            top: 100%;
+            left: 0;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .calendar-nav {
+            cursor: pointer;
+            font-weight: bold;
+            user-select: none;
+        }
+        
+        .month-year-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .month-dropdown, .year-dropdown {
+            padding: 3px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+        
+        .calendar-day-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            padding: 5px 0;
+        }
+        
+        .calendar-day {
+            text-align: center;
+            padding: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            border-radius: 3px;
+        }
+        
+        .calendar-day:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .calendar-day.today {
+            background-color: #e6f7ff;
+        }
+        
+        .calendar-day.selected {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .calendar-day.other-month {
+            color: #ccc;
         }
     </style>
+    <!-- Include html2pdf library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-
-    <div class="a4-page-container" id="printableArea">
-        <div class="paysheet-wrapper">
-            <div class="paysheet" id="paysheet1">
-                <header><h1>Chandi vine storse - Panadura</h1></header>
-                 <section class="details">
-                     <div class="row"><label for="month">මාසය (Month):</label><input type="month" id="month"></div>
-                     <div class="row"><label for="name">නම (Name):</label><input type="text" id="name" placeholder="සේවකයාගේ නම"></div>
-                     <div class="row"><label for="designation">තනතුර (Designation):</label><input type="text" id="designation" placeholder="උදා: Sales Assistant"></div>
-                 </section>
-                 <hr>
-                 <section class="earnings">
-                     <h2>ඉපැයීම් (Earnings)</h2>
-                     <div class="row"><label for="basic_salary">මූලික වැටුප (Basic Salary):</label><input type="number" id="basic_salary" value="0" step="any" oninput="updateEpfAndCalculate()"></div>
-                     <div class="row"><label for="allowance_attendance">දීමනා - පැමිණීම:</label><input type="number" id="allowance_attendance" value="0" step="any" oninput="calculatePaysheet()"></div>
-                     <div class="row"><label for="allowance_service">දීමනා - සේවා ගාස්තු:</label><input type="number" id="allowance_service" value="0" step="any" oninput="calculatePaysheet()"></div>
-                     <div class="row"><label for="ot_hours">අතිකාල පැය (OT Hours):</label><input type="number" id="ot_hours" value="0" step="any" oninput="calculatePaysheet()"></div>
-                     <div class="row"><label for="ot_rate">අතිකාල අනුපාතය:</label><input type="number" id="ot_rate" value="0" step="any" placeholder="පැයකට ගෙවීම" oninput="calculatePaysheet()"></div>
-                     <div class="row result"><label>අතිකාල ගෙවීම (OT Pay):</label><span id="ot_pay">0.00</span></div>
-                     <div class="row result gross-pay"><label>දළ වැටුප (Gross Pay):</label><span id="gross_pay">0.00</span></div>
-                 </section>
-                 <hr>
-                 <section class="deductions">
-                      <h2>අඩු කිරීම් (Deductions)</h2>
-                      <div class="row"><label for="deduction_epf_input">EPF අඩුකිරීම:</label><input type="number" id="deduction_epf_input" value="0" step="any" oninput="calculatePaysheet()" placeholder="අතින් ඇතුලත් කරන්න"></div>
-                      <div class="row"><span class="epf_auto_calc">(යෝජිත 8% (Basic): <span id="epf_calculated_value">0.00</span>)</span></div>
-                      <div class="row"><label for="deduction_advance">වැටුප් අත්තිකාරම්:</label><input type="number" id="deduction_advance" value="0" step="any" oninput="calculatePaysheet()"></div>
-                      <div class="row"><label for="deduction_other">වෙනත් අඩුකිරීම්:</label><input type="number" id="deduction_other" value="0" step="any" oninput="calculatePaysheet()"></div>
-                      <div class="row result"><label>මුළු අඩු කිරීම් (Total Deductions):</label><span id="total_deductions">0.00</span></div>
-                 </section>
-                  <hr>
-                 <section class="net-pay result">
-                     <h2>ශුද්ධ වැටුප (Net Pay):</h2>
-                     <span id="net_pay" style="font-size: 16px;">0.00</span>
-                 </section>
+    <div class="no-print button-container">
+        <button class="pdf-button" onclick="generatePDF()">Save as PDF</button>
+    </div>
+    
+    <div class="page" id="report-page">
+        <!-- First copy -->
+        <div class="report-container">
+            <div class="container">
+                <div class="header">
+                    <h2>Chandi Vine Stores - Panadura</h2>
+                    <h3>Pay Report</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label>මාසය (Month):</label>
+                    <div class="date-picker-wrapper">
+                        <input type="text" class="month" value="2025-05" readonly onclick="showCalendar(this)">
+                        <div class="date-picker-calendar">
+                            <div class="month-year-selector">
+                                <select class="month-dropdown">
+                                    <option value="01">January</option>
+                                    <option value="02">February</option>
+                                    <option value="03">March</option>
+                                    <option value="04">April</option>
+                                    <option value="05">May</option>
+                                    <option value="06">June</option>
+                                    <option value="07">July</option>
+                                    <option value="08">August</option>
+                                    <option value="09">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                                <select class="year-dropdown">
+                                    <!-- Will be populated by JS -->
+                                </select>
+                            </div>
+                            <div class="calendar-days">
+                                <!-- Will be populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>නම (Name):</label>
+                    <select class="name">
+                        <option value="S.T. Buddhika">S.T. Buddhika</option>
+                        <option value="P.M.P Deshapriya">P.M.P Deshapriya</option>
+                        <option value="H.P.S.L. Amarasiri">H.P.S.L. Amarasiri</option>
+                        <option value="D.H. Piumal">D.H. Piumal</option>
+                        <option value="M.A.N. Priyankra">M.A.N. Priyankra</option>
+                        <option value="Aruna">Aruna</option>
+                        <option value="Another">Another</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>තනතුර (Designation):</label>
+                    <input type="text" class="designation" value="">
+                </div>
+                
+                <div class="section-title">ඉපැයීම් (Earnings)</div>
+                
+                <div class="form-group">
+                    <label>මූලික වැටුප (Basic):</label>
+                    <input type="text" class="basicSalary" value="00.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>දීමනා - පැමිණීම:</label>
+                    <input type="text" class="allowance" value="00.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>පැමිණීමේ දීමනාව:</label>
+                    <input type="text" class="attendanceAllowance" value="00.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>දීමනා - අලෙවි ගාස්තු:</label>
+                    <input type="text" class="sales" value="00.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>අතිකාල පැය (OT Hours):</label>
+                    <input type="text" class="otHours" value="0" oninput="calculateOT(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>අතිකාල අනුපාතය (Rate):</label>
+                    <input type="text" class="otRate" value="00.00" oninput="calculateOT(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>අතිකාල ගෙවීම (OT Pay):</label>
+                    <input type="text" class="otPay" value="00.00" readonly class="result-field">
+                </div>
+                
+                <div class="form-group">
+                    <label>දළ වැටුප (Gross Pay):</label>
+                    <input type="text" class="grossPay" value="00.00" readonly class="result-field">
+                </div>
+                
+                <div class="section-title">අඩු කිරීම් (Deductions)</div>
+                
+                <div class="form-group">
+                    <label>EPF අඩුකිරීම (8%):</label>
+                    <input type="text" class="epfDeduction" value="00.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>අත්තිකාරම්:</label>
+                    <input type="text" class="advance" value="0.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>වෙනත්:</label>
+                    <input type="text" class="other" value="0.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>ශුද්ධ වැටුප (Net Pay):</label>
+                    <input type="text" class="netPay" value="00.00" readonly class="result-field">
+                </div>
+                
+                <div class="signature-section">
+                    <div style="float: left; text-align: center; width: 45%;">
+                        <div class="signature-line"></div>
+                        <div>සකස් කළේ</div>
+                    </div>
+                    <div style="float: right; text-align: center; width: 45%;">
+                        <div class="signature-line"></div>
+                        <div>අනුමත කළේ</div>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+                
+                <div class="footer">
+                    Chandi Vine Stores - Panadura
+                </div>
             </div>
         </div>
-
-        <div class="paysheet-wrapper">
-            <div class="paysheet" id="paysheet2">
-                <p style="text-align: center; color: #aaa; margin-top: 20px;">වැටුප් පත්‍රිකාවේ දෙවන පිටපත මෙහි දිස්වනු ඇත.</p>
+        
+        <!-- Second copy (identical) -->
+        <div class="report-container">
+            <div class="container">
+                <div class="header">
+                    <h2>Chandi Vine Stores - Panadura</h2>
+                    <h3>Pay Report</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label>මාසය (Month):</label>
+                    <div class="date-picker-wrapper">
+                        <input type="text" class="month" value="2025-05" readonly onclick="showCalendar(this)">
+                        <div class="date-picker-calendar">
+                            <div class="month-year-selector">
+                                <select class="month-dropdown">
+                                    <option value="01">January</option>
+                                    <option value="02">February</option>
+                                    <option value="03">March</option>
+                                    <option value="04">April</option>
+                                    <option value="05">May</option>
+                                    <option value="06">June</option>
+                                    <option value="07">July</option>
+                                    <option value="08">August</option>
+                                    <option value="09">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                                <select class="year-dropdown">
+                                    <!-- Will be populated by JS -->
+                                </select>
+                            </div>
+                            <div class="calendar-days">
+                                <!-- Will be populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>නම (Name):</label>
+                    <select class="name">
+                        <option value="S.T. Buddhika">S.T. Buddhika</option>
+                        <option value="P.M.P Deshapriya">P.M.P Deshapriya</option>
+                        <option value="H.P.S.L. Amarasiri">H.P.S.L. Amarasiri</option>
+                        <option value="D.H. Piumal">D.H. Piumal</option>
+                        <option value="M.A.N. Priyankra">M.A.N. Priyankra</option>
+                        <option value="Aruna">Aruna</option>
+                        <option value="Another">Another</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>තනතුර (Designation):</label>
+                    <input type="text" class="designation" value="">
+                </div>
+                
+                <div class="section-title">ඉපැයීම් (Earnings)</div>
+                
+                <div class="form-group">
+                    <label>මූලික වැටුප (Basic):</label>
+                    <input type="text" class="basicSalary" value="00.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>දීමනා - පැමිණීම:</label>
+                    <input type="text" class="allowance" value="00.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>පැමිණීමේ දීමනාව:</label>
+                    <input type="text" class="attendanceAllowance" value="00.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>දීමනා - අලෙවි ගාස්තු:</label>
+                    <input type="text" class="sales" value="00.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>අතිකාල පැය (OT Hours):</label>
+                    <input type="text" class="otHours" value="0" oninput="calculateOT(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>අතිකාල අනුපාතය (Rate):</label>
+                    <input type="text" class="otRate" value="00.00" oninput="calculateOT(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>අතිකාල ගෙවීම (OT Pay):</label>
+                    <input type="text" class="otPay" value="00.00" readonly class="result-field">
+                </div>
+                
+                <div class="form-group">
+                    <label>දළ වැටුප (Gross Pay):</label>
+                    <input type="text" class="grossPay" value="00.00" readonly class="result-field">
+                </div>
+                
+                <div class="section-title">අඩු කිරීම් (Deductions)</div>
+                
+                <div class="form-group">
+                    <label>EPF අඩුකිරීම (8%):</label>
+                    <input type="text" class="epfDeduction" value="00.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>අත්තිකාරම්:</label>
+                    <input type="text" class="advance" value="0.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>වෙනත්:</label>
+                    <input type="text" class="other" value="0.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
+                    <label>ශුද්ධ වැටුප (Net Pay):</label>
+                    <input type="text" class="netPay" value="00.00" readonly class="result-field">
+                </div>
+                
+                <div class="signature-section">
+                    <div style="float: left; text-align: center; width: 45%;">
+                        <div class="signature-line"></div>
+                        <div>සකස් කළේ</div>
+                    </div>
+                    <div style="float: right; text-align: center; width: 45%;">
+                        <div class="signature-line"></div>
+                        <div>අනුමත කළේ</div>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+                
+                <div class="footer">
+                    Chandi Vine Stores - Panadura, Contact
+                </div>
             </div>
         </div>
     </div>
-    <button id="savePdfButton" onclick="generatePDF()">PDF ලෙස සුරකින්න (පැති දෙක)</button>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
-        const { jsPDF } = window.jspdf;
-
-        // Improved function to get values with better prefix handling
-        function getValue(id, sheetPrefix = '') {
-            // Add sheet prefix if provided (for paysheet2)
-            const elementId = sheetPrefix ? `${sheetPrefix}_${id}` : id;
-            const element = document.getElementById(elementId);
+        // Calculate overtime pay when hours or rate changes
+        function calculateOT(input) {
+            const container = input.closest('.report-container');
+            const hours = parseFloat(container.querySelector('.otHours').value.replace(/,/g, '')) || 0;
+            const rate = parseFloat(container.querySelector('.otRate').value.replace(/,/g, '')) || 0;
+            const otPay = hours * rate;
             
-            if (element) {
-                const value = element.value || element.textContent;
-                return value === '' ? 0 : parseFloat(value) || 0;
-            }
-            console.warn(`Element with id "${elementId}" not found.`);
-            return 0;
+            container.querySelector('.otPay').value = formatNumber(otPay);
+            updateGrossPay(container);
         }
         
-        // Improved function to set text with better prefix handling
-        function setText(id, value, sheetPrefix = '') {
-            // Add sheet prefix if provided (for paysheet2)
-            const elementId = sheetPrefix ? `${sheetPrefix}_${id}` : id;
-            const element = document.getElementById(elementId);
+        // Update gross pay calculation
+        function updateGrossPay(container) {
+            const basicSalary = parseFloat(container.querySelector('.basicSalary').value.replace(/,/g, '')) || 0;
+            const allowance = parseFloat(container.querySelector('.allowance').value.replace(/,/g, '')) || 0;
+            const attendanceAllowance = parseFloat(container.querySelector('.attendanceAllowance').value.replace(/,/g, '')) || 0;
+            const sales = parseFloat(container.querySelector('.sales').value.replace(/,/g, '')) || 0;
+            const otPay = parseFloat(container.querySelector('.otPay').value.replace(/,/g, '')) || 0;
             
-            if (element) {
-                element.textContent = value;
-            } else {
-                console.warn(`Element with id "${elementId}" not found for setting text.`);
-            }
-        }
-         
-        function updateEpfAndCalculate() {
-            calculateEpfSuggestion();
-            calculatePaysheet();
+            const grossPay = basicSalary + allowance + attendanceAllowance + sales + otPay;
+            container.querySelector('.grossPay').value = formatNumber(grossPay);
+            
+            updateNetPay(container);
         }
         
-        function calculateEpfSuggestion(sheetPrefix = '') {
-            const basicSalary = getValue('basic_salary', sheetPrefix);
-            const epfPercentage = 8;
-            const calculatedEpf = (basicSalary * epfPercentage) / 100;
-            setText('epf_calculated_value', calculatedEpf.toFixed(2), sheetPrefix);
+        // Update net pay calculation
+        function updateNetPay(container) {
+            const grossPay = parseFloat(container.querySelector('.grossPay').value.replace(/,/g, '')) || 0;
+            const epfDeduction = parseFloat(container.querySelector('.epfDeduction').value.replace(/,/g, '')) || 0;
+            const advance = parseFloat(container.querySelector('.advance').value.replace(/,/g, '')) || 0;
+            const other = parseFloat(container.querySelector('.other').value.replace(/,/g, '')) || 0;
+            
+            const netPay = grossPay - epfDeduction - advance - other;
+            container.querySelector('.netPay').value = formatNumber(netPay);
         }
         
-        function calculatePaysheet(sheetPrefix = '') {
-            const basicSalary = getValue('basic_salary', sheetPrefix);
-            const allowanceTransport = getValue('allowance_transport', sheetPrefix);
-            const allowanceAttendance = getValue('allowance_attendance', sheetPrefix);
-            const allowanceService = getValue('allowance_service', sheetPrefix);
-            const otHours = getValue('ot_hours', sheetPrefix);
-            const otRate = getValue('ot_rate', sheetPrefix);
-            const epfDeduction = getValue('deduction_epf_input', sheetPrefix);
-            const deductionAdvance = getValue('deduction_advance', sheetPrefix);
-            const deductionOther = getValue('deduction_other', sheetPrefix);
-            
-            calculateEpfSuggestion(sheetPrefix);
-            
-            const otPay = otHours * otRate;
-            setText('ot_pay', otPay.toFixed(2), sheetPrefix);
-            
-            const grossPay = basicSalary + allowanceTransport + allowanceAttendance + allowanceService + otPay;
-            setText('gross_pay', grossPay.toFixed(2), sheetPrefix);
-            
-            const totalDeductions = epfDeduction + deductionAdvance + deductionOther;
-            setText('total_deductions', totalDeductions.toFixed(2), sheetPrefix);
-            
-            const netPay = grossPay - totalDeductions;
-            setText('net_pay', netPay.toFixed(2), sheetPrefix);
+        // Handle any input changes
+        function updateCalculations(input) {
+            const container = input.closest('.report-container');
+            updateGrossPay(container);
         }
-
-        // Function to copy values from original paysheet to the copy
-        function copyPaysheetValues(sourcePrefix = '', targetPrefix = 'copy_') {
-            // List of all input fields to copy
-            const inputFields = [
-                'month', 'name', 'designation', 'basic_salary',
-                'allowance_transport', 'allowance_attendance', 'allowance_service',
-                'ot_hours', 'ot_rate', 'deduction_epf_input',
-                'deduction_advance', 'deduction_other'
-            ];
+        
+        // Format numbers with 2 decimal places
+        function formatNumber(num) {
+            return num.toFixed(2);
+        }
+        
+        // Generate PDF function
+        function generatePDF() {
+            // Get employee name for the filename
+            const employeeName = document.querySelector('.name').value || 'employee';
+            const month = document.querySelector('.month').value || 'month';
+            const filename = 'Pay_Report_' + employeeName + '_' + month + '.pdf';
             
-            // Copy each input value
-            inputFields.forEach(field => {
-                const sourceId = sourcePrefix ? `${sourcePrefix}${field}` : field;
-                const targetId = `${targetPrefix}${field}`;
-                
-                const sourceElement = document.getElementById(sourceId);
-                const targetElement = document.getElementById(targetId);
-                
-                if (sourceElement && targetElement) {
-                    targetElement.value = sourceElement.value;
-                }
+            // Set PDF options
+            const options = {
+                margin: 0,
+                filename: filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // Get the report element
+            const element = document.getElementById('report-page');
+            
+            // Generate PDF
+            html2pdf().set(options).from(element).save();
+        }
+        
+        // Initialize calculations on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const containers = document.querySelectorAll('.report-container');
+            containers.forEach(container => {
+                calculateOT(container.querySelector('.otHours'));
             });
             
-            // Calculate the copied paysheet
-            calculatePaysheet(targetPrefix);
-        }
-
-        // Completely redesigned function to create a duplicate paysheet
-        function createDuplicatePaysheet() {
-            const paysheet1Element = document.getElementById('paysheet1');
-            const paysheet2Element = document.getElementById('paysheet2');
+            // Initialize year dropdowns
+            initYearDropdowns();
             
-            if (!paysheet1Element || !paysheet2Element) {
-                console.error("Missing required elements");
-                return false;
-            }
+            // Close calendar when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.date-picker-wrapper')) {
+                    document.querySelectorAll('.date-picker-calendar').forEach(cal => {
+                        cal.style.display = 'none';
+                    });
+                }
+            });
+        });
+        
+        // Sync both copies when data changes
+        document.addEventListener('input', function(e) {
+            if (!e.target.classList) return;
             
-            // Clone the original paysheet
-            const duplicatePaysheet = paysheet1Element.cloneNode(true);
+            // Get the class name of the changed element
+            const className = Array.from(e.target.classList).find(cls => 
+                cls !== 'result-field' && cls !== 'form-control');
             
-            // Update all IDs in the duplicate to have 'copy_' prefix
-            const elementsWithId = duplicatePaysheet.querySelectorAll('[id]');
-            elementsWithId.forEach(el => {
-                el.id = `copy_${el.id}`;
-                
-                // Add event listeners to the copied inputs
-                if (el.tagName === 'INPUT') {
-                    if (el.id === 'copy_basic_salary') {
-                        el.addEventListener('input', () => {
-                            calculateEpfSuggestion('copy_');
-                            calculatePaysheet('copy_');
-                        });
-                    } else {
-                        el.addEventListener('input', () => calculatePaysheet('copy_'));
+            if (!className) return;
+            
+            // Don't proceed if it's a result field
+            if (e.target.readOnly) return;
+            
+            // Find the same field in the other container and update it
+            const currentContainer = e.target.closest('.report-container');
+            const containers = document.querySelectorAll('.report-container');
+            
+            containers.forEach(container => {
+                if (container !== currentContainer) {
+                    const matchingElement = container.querySelector('.' + className);
+                    if (matchingElement && matchingElement.value !== e.target.value) {
+                        matchingElement.value = e.target.value;
+                        
+                        // If this is an OT field, recalculate OT
+                        if (className === 'otHours' || className === 'otRate') {
+                            calculateOT(matchingElement);
+                        } else {
+                            // Otherwise update general calculations
+                            updateCalculations(matchingElement);
+                        }
                     }
                 }
             });
+        });
+        
+        // Date picker functionality
+        function initYearDropdowns() {
+            const currentYear = new Date().getFullYear();
+            const yearDropdowns = document.querySelectorAll('.year-dropdown');
             
-            // Update 'for' attributes in labels
-            const labelsWithFor = duplicatePaysheet.querySelectorAll('label[for]');
-            labelsWithFor.forEach(label => {
-                const forValue = label.getAttribute('for');
-                label.setAttribute('for', `copy_${forValue}`);
+            // Generate years (current year - 5 to current year + 5)
+            for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                
+                yearDropdowns.forEach(dropdown => {
+                    dropdown.appendChild(option.cloneNode(true));
+                });
+            }
+            
+            // Set default year to 2025 (from initial value)
+            yearDropdowns.forEach(dropdown => {
+                dropdown.value = '2025';
+            });
+        }
+        
+        function showCalendar(inputElement) {
+            // Hide all other calendars first
+            document.querySelectorAll('.date-picker-calendar').forEach(cal => {
+                cal.style.display = 'none';
             });
             
-            // Clear and append the duplicate paysheet
-            paysheet2Element.innerHTML = '';
-            paysheet2Element.appendChild(duplicatePaysheet);
+            const calendarElement = inputElement.nextElementSibling;
+            const currentValue = inputElement.value;
             
-            // Copy values from original to duplicate
-            copyPaysheetValues('', 'copy_');
+            // Parse the current date value (YYYY-MM format)
+            let [year, month] = ['2025', '05']; // Default values
             
-            return true;
-        }
-
-        async function generatePDF() {
-            const printableArea = document.getElementById('printableArea');
-            const button = document.getElementById('savePdfButton');
-
-            // First, create the duplicate paysheet
-            if (!createDuplicatePaysheet()) {
-                alert("දෙවන පිටපත නිර්මාණය කිරීමේ දෝෂයක්!");
-                return;
+            if (currentValue && currentValue.match(/^\d{4}-\d{2}$/)) {
+                [year, month] = currentValue.split('-');
             }
-
-            // Hide the button during capture
-            if (button) button.style.display = 'none';
-            await new Promise(resolve => setTimeout(resolve, 500)); // Give time for DOM updates
-
-            try {
-                console.log("Capturing printable area (Side-by-Side)...");
-                // html2canvas function එක තුළ
-const canvas = await html2canvas(printableArea, {
-    scale: 2.5, // keep scale high
-    useCORS: true,
-    logging: true,
-    scrollX: 0,
-    scrollY: -window.scrollY,
-    windowWidth: document.documentElement.offsetWidth,
-    windowHeight: document.documentElement.offsetHeight,
-    backgroundColor: '#ffffff',
-    letterRendering: true, // මෙය වැදගත්
-    allowTaint: true,
-    height: printableArea.scrollHeight + 50, // වැඩි height එකක් දෙනවා
-    onclone: function(clonedDoc) {
-        // Ensure all text is fully visible in the clone
-        const inputs = clonedDoc.querySelectorAll('.paysheet input');
-        inputs.forEach(input => {
-            input.style.overflow = 'visible';
-            input.style.height = 'auto';
-            input.style.minHeight = '32px';
-        });
-    }
-});
-                
-                console.log("Canvas created, width:", canvas.width, "height:", canvas.height);
-                const imgData = canvas.toDataURL('image/png');
-
-                // Show button again
-                if (button) button.style.display = 'block';
-
-                // Create PDF - Use standard A4 size (Portrait)
-                console.log("Creating PDF document (A4 Portrait)...");
-                const pdf = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4'
-                });
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = pdf.internal.pageSize.getHeight();
-                console.log("PDF Page Size (mm):", pdfWidth, "x", pdfHeight);
-
-                // Calculate aspect ratio and scaling
-                const imgProps = pdf.getImageProperties(imgData);
-                const imgWidth = imgProps.width;
-                const imgHeight = imgProps.height;
-                console.log("Captured Image Size (pixels):", imgWidth, "x", imgHeight);
-                const ratio = Math.min((pdfWidth - 10) / imgWidth, (pdfHeight - 10) / imgHeight);
-                const effectiveImgWidth = imgWidth * ratio;
-                const effectiveImgHeight = imgHeight * ratio;
-                console.log("Scaled Image Size for PDF (mm):", effectiveImgWidth, "x", effectiveImgHeight);
-                const xOffset = (pdfWidth - effectiveImgWidth) / 2;
-                const yOffset = (pdfHeight - effectiveImgHeight) / 2;
-                console.log("PDF Image Offset (mm):", xOffset, "x", yOffset);
-
-                // Add the captured image
-                pdf.addImage(imgData, 'PNG', xOffset, yOffset, effectiveImgWidth, effectiveImgHeight);
-                console.log("Image added to PDF.");
-
-                // Save PDF
-                const monthInput = document.getElementById('month');
-                const nameInput = document.getElementById('name');
-                const monthValue = monthInput ? monthInput.value : 'paysheet_month';
-                const nameValue = nameInput ? nameInput.value.trim() : 'employee';
-                const safeName = nameValue.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_.-]/g, '');
-                const safeMonth = monthValue.replace(/[^a-zA-Z0-9_-]/g, '');
-                const filename = `${safeName}_${safeMonth}_paysheet_sideX2.pdf`;
-                console.log("Saving PDF as:", filename);
-                pdf.save(filename);
-
-                // Clean up - remove the copied content and restore placeholder
-                const paysheet2Element = document.getElementById('paysheet2');
-                paysheet2Element.innerHTML = '<p style="text-align: center; color: #aaa; margin-top: 20px;">වැටුප් පත්‍රිකාවේ දෙවන පිටපත මෙහි දිස්වනු ඇත.</p>';
-
-            } catch (error) {
-                console.error("PDF සෑදීමේදී දෝෂයක්:", error);
-                if (button) button.style.display = 'block';
-                alert("PDF ගොනුව සෑදීමේදී දෝෂයක් ඇතිවිය. වැඩි විස්තර සඳහා Console (F12) බලන්න.");
-                
-                // Clean up even on error
-                const paysheet2Element = document.getElementById('paysheet2');
-                paysheet2Element.innerHTML = '<p style="text-align: center; color: #aaa; margin-top: 20px;">වැටුප් පත්‍රිකාවේ දෙවන පිටපත මෙහි දිස්වනු ඇත.</p>';
-            }
+            
+            // Set dropdown values
+            const monthDropdown = calendarElement.querySelector('.month-dropdown');
+            const yearDropdown = calendarElement.querySelector('.year-dropdown');
+            
+            monthDropdown.value = month;
+            yearDropdown.value = year;
+            
+            // Setup event listeners
+            monthDropdown.onchange = () => updateDateValue(inputElement, yearDropdown.value, monthDropdown.value);
+            yearDropdown.onchange = () => updateDateValue(inputElement, yearDropdown.value, monthDropdown.value);
+            
+            // Show the calendar
+            calendarElement.style.display = 'block';
+            
+            // Prevent closing the calendar when clicking inside it
+            calendarElement.onclick = function(event) {
+                event.stopPropagation();
+            };
         }
-
-        // Initialize calculations
-        window.onload = calculatePaysheet;
+        
+        function updateDateValue(inputElement, year, month) {
+            const dateValue = `${year}-${month}`;
+            inputElement.value = dateValue;
+            
+            // Sync date value to the other report container
+            const allInputs = document.querySelectorAll('.month');
+            allInputs.forEach(input => {
+                if (input !== inputElement) {
+                    input.value = dateValue;
+                }
+            });
+        }
     </script>
-
 </body>
 </html>
