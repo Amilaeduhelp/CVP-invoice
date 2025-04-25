@@ -92,8 +92,13 @@
         }
         
         .form-group select {
-            text-align: left;
-        }
+			width: 100px;
+			text-align: left;
+		}
+		/* Make the designation select wider */
+		.form-group select.Designation {
+			width: 118px;
+		}
         
         /* Make the name select wider */
         .form-group select.name {
@@ -361,7 +366,7 @@
                 
                 <div class="form-group">
                     <label>EPF අඩුකිරීම (8%):</label>
-                    <input type="text" class="epfDeduction" value="00.00" oninput="updateCalculations(this)">
+                    <input type="text" class="epfDeduction" value="00.00" readonly class="result-field">
                 </div>
                 
                 <div class="form-group">
@@ -502,7 +507,7 @@
                 
                 <div class="form-group">
                     <label>EPF අඩුකිරීම (8%):</label>
-                    <input type="text" class="epfDeduction" value="00.00" oninput="updateCalculations(this)">
+                    <input type="text" class="epfDeduction" value="00.00" readonly class="result-field">
                 </div>
                 
                 <div class="form-group">
@@ -560,6 +565,10 @@
             
             const grossPay = basicSalary + attendanceAllowance + sales + otPay;
             container.querySelector('.grossPay').value = formatNumber(grossPay);
+            
+            // Calculate EPF deduction (8% of basic salary)
+            const epfDeduction = basicSalary * 0.08;
+            container.querySelector('.epfDeduction').value = formatNumber(epfDeduction);
             
             updateNetPay(container);
         }
