@@ -343,6 +343,11 @@
                 </div>
                 
                 <div class="form-group">
+                    <label>වෙනත් දීමනා:</label>
+                    <input type="text" class="otherAllowance" value="00.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
                     <label>අතිකාල පැය (OT Hours):</label>
                     <input type="text" class="otHours" value="0" oninput="calculateOT(this)">
                 </div>
@@ -484,6 +489,11 @@
                 </div>
                 
                 <div class="form-group">
+                    <label>වෙනත් දීමනා:</label>
+                    <input type="text" class="otherAllowance" value="00.00" oninput="updateCalculations(this)">
+                </div>
+                
+                <div class="form-group">
                     <label>අතිකාල පැය (OT Hours):</label>
                     <input type="text" class="otHours" value="0" oninput="calculateOT(this)">
                 </div>
@@ -561,13 +571,14 @@
             const basicSalary = parseFloat(container.querySelector('.basicSalary').value.replace(/,/g, '')) || 0;
             const attendanceAllowance = parseFloat(container.querySelector('.attendanceAllowance').value.replace(/,/g, '')) || 0;
             const sales = parseFloat(container.querySelector('.sales').value.replace(/,/g, '')) || 0;
+            const otherAllowance = parseFloat(container.querySelector('.otherAllowance').value.replace(/,/g, '')) || 0;
             const otPay = parseFloat(container.querySelector('.otPay').value.replace(/,/g, '')) || 0;
             
-            const grossPay = basicSalary + attendanceAllowance + sales + otPay;
+            const grossPay = basicSalary + attendanceAllowance + sales + otherAllowance + otPay;
             container.querySelector('.grossPay').value = formatNumber(grossPay);
             
-            // Calculate EPF deduction (8% of basic salary)
-            const epfDeduction = basicSalary * 0.08;
+            // Calculate EPF deduction (8% of gross salary instead of basic)
+            const epfDeduction = grossPay * 0.08;
             container.querySelector('.epfDeduction').value = formatNumber(epfDeduction);
             
             updateNetPay(container);
