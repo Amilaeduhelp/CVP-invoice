@@ -329,14 +329,9 @@
                 
                 <div class="form-group">
                     <label>දීමනා - පැමිණීම:</label>
-                    <input type="text" class="allowance" value="00.00" oninput="updateCalculations(this)">
-                </div>
-                
-                <div class="form-group">
-                    <label>පැමිණීමේ දීමනාව:</label>
                     <input type="text" class="attendanceAllowance" value="00.00" oninput="updateCalculations(this)">
                 </div>
-                
+                             
                 <div class="form-group">
                     <label>දීමනා - අලෙවි ගාස්තු:</label>
                     <input type="text" class="sales" value="00.00" oninput="updateCalculations(this)">
@@ -475,11 +470,6 @@
                 
                 <div class="form-group">
                     <label>දීමනා - පැමිණීම:</label>
-                    <input type="text" class="allowance" value="00.00" oninput="updateCalculations(this)">
-                </div>
-                
-                <div class="form-group">
-                    <label>පැමිණීමේ දීමනාව:</label>
                     <input type="text" class="attendanceAllowance" value="00.00" oninput="updateCalculations(this)">
                 </div>
                 
@@ -564,12 +554,11 @@
         // Update gross pay calculation
         function updateGrossPay(container) {
             const basicSalary = parseFloat(container.querySelector('.basicSalary').value.replace(/,/g, '')) || 0;
-            const allowance = parseFloat(container.querySelector('.allowance').value.replace(/,/g, '')) || 0;
             const attendanceAllowance = parseFloat(container.querySelector('.attendanceAllowance').value.replace(/,/g, '')) || 0;
             const sales = parseFloat(container.querySelector('.sales').value.replace(/,/g, '')) || 0;
             const otPay = parseFloat(container.querySelector('.otPay').value.replace(/,/g, '')) || 0;
             
-            const grossPay = basicSalary + allowance + attendanceAllowance + sales + otPay;
+            const grossPay = basicSalary + attendanceAllowance + sales + otPay;
             container.querySelector('.grossPay').value = formatNumber(grossPay);
             
             updateNetPay(container);
